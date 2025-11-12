@@ -1,13 +1,26 @@
-"# SystemNegocjacjiProjekt" 
+# SystemNegocjacjiProjekt
 
-To run you need to instal npm
-After that pip install -r requirements.txt
+##  Uruchomienie projektu
 
-To run backend 
+### 1. Wymagania
+Upewnij się, że masz zainstalowane:
+- **Python 3.10+**
+- **pip**
+- **Node.js** oraz **npm**
+
+### 2. Instalacja i uruchomienie
+
+```bash
+# Instalacja zależności backendu
+pip install -r requirements.txt
+
+# Uruchomienie backendu
 cd api/
 uvicorn main:app --reload --port 8000
 
-Frontend
-cd app/
+# Instalacja zależności frontendu
+cd ../app/
 npm install
-npm run dev 
+
+# Uruchomienie frontendu
+npm run dev
