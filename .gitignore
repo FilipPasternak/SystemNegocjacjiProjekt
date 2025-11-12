@@ -1,0 +1,42 @@
+# --- global ---
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+*.swo
+
+# --- env & secrets ---
+.env
+.env.*.local
+app/.env.local
+api/.env
+
+# --- python (api) ---
+api/.venv/
+api/__pycache__/
+api/*.pyc
+api/.pytest_cache/
+api/.mypy_cache/
+api/.ruff_cache/
+api/.coverage
+api/.coverage.*
+api/htmlcov/
+api/.ipynb_checkpoints/
+api/*.db  # SQLite (np. app.db) – NIE commitujemy
+
+# --- node / next (app) ---
+app/node_modules/
+app/.next/
+app/.turbo/
+app/out/
+app/dist/
+app/.vercel/
+app/npm-debug.log*
+app/yarn-error.log*
+app/pnpm-lock.yaml # jeśli używasz npm, usuń ten wpis
+app/.env.local
+
+# --- OS/IDE ---
+.vscode/
+.idea/
