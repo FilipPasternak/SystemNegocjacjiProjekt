@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <!-- PLACEHOLDER: SEO_TITLE -->
+  <title>Nowoczesny sklep internetowy – szablon</title>
+  <!-- PLACEHOLDER: SEO_META_DESCRIPTION -->
+  <meta name="description" content="Szablon nowoczesnego sklepu internetowego z katalogiem produktów, kategoriami, listami best-sellerów i miejscem na integrację z systemem sprzedaży.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ----------------------
+       DESIGN SYSTEM
+    ----------------------- */
+    :root {
+      --bg: #0b0c10;
+      --bg-soft: #11131a;
+      --surface: #161922;
+      --text: #e6e6e6;
+      --muted: #a7b0c0;
+      --brand: #7c6cff; /* iris */
+      --brand-2: #00d4ff; /* aqua */
+      --accent: #ff9a5a; /* mango */
+      --success: #29d399;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius-xl: 22px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --ring: 0 0 0 2px color-mix(in lab, var(--brand) 60%, transparent);
+
+      --container: min(1100px, 92vw);
+      --header-h: 72px;
+    }
+
+    html {scroll-behavior: smooth;}
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #fbfbfd;
+        --bg-soft: #f3f5fb;
+        --surface: #ffffff;
+        --text: #1a1c22;
+        --muted: #5b6270;
+        --shadow: 0 8px 28px rgba(15, 23, 42, .08);
+      }
+    }
+
+    [data-theme="light"] {
+      --bg: #fbfbfd;
+      --bg-soft: #f3f5fb;
+      --surface: #ffffff;
+      --text: #1a1c22;
+      --muted: #5b6270;
+      --shadow: 0 8px 28px rgba(15, 23, 42, .08);
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 75% -10%, color-mix(in lab, var(--brand) 20%, transparent), transparent),
+                  radial-gradient(800px 400px at -5% 10%, color-mix(in lab, var(--brand-2) 15%, transparent), transparent),
+                  var(--bg);
+      line-height: 1.5;
+    }
+
+    /* Glassy sticky header */
+    .nav {
+      position: sticky; top: 0; z-index: 50;
+      height: var(--header-h);
+      display: grid; place-items: center;
+      background: color-mix(in lab, var(--bg-soft) 70%, transparent);
+      backdrop-filter: blur(10px) saturate(1.2);
+      border-bottom: 1px solid color-mix(in lab, var(--muted) 14%, transparent);
+    }
+
+    .nav__inner { width: var(--container); display:flex; align-items:center; justify-content:space-between; gap: 16px; }
+    .brand { display:flex; align-items:center; gap: 12px; font-weight: 800; letter-spacing:.3px; }
+    .brand__logo {
+      width:36px; height:36px; border-radius:14px; overflow:hidden; box-shadow: var(--shadow);
+      background: conic-gradient(from 210deg at 50% 50%, var(--brand), var(--brand-2), var(--accent), var(--brand));
+    }
+    .brand__text { font-size: 1.05rem; }
+
+    .nav__links { display:flex; gap: 10px; align-items:center; }
+    .nav__links a { text-decoration:none; color: var(--text); opacity:.84; padding:10px 12px; border-radius: 10px; }
+    .nav__links a:hover { opacity:1; background: color-mix(in lab, var(--muted) 12%, transparent); }
+
+    .btn { border: 0; background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: white; padding: 12px 18px; border-radius: 999px; font-weight: 700; letter-spacing:.2px; cursor: pointer; box-shadow: var(--shadow); transition: transform .2s ease, box-shadow .2s ease;}
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 18px 40px color-mix(in lab, var(--brand) 15%, black); }
+    .btn--ghost { background: transparent; color: var(--text); border: 1px solid color-mix(in lab, var(--muted) 30%, transparent); }
+
+    .theme { display:inline-grid; grid-auto-flow:column; gap: 8px; align-items:center; }
+    .switch { width: 50px; height:28px; background: color-mix(in lab, var(--muted) 22%, transparent); border-radius: 999px; position: relative; transition: background .2s ease; }
+    .switch__dot { position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius: 999px; background: var(--surface); box-shadow: var(--shadow); transition: transform .25s ease; }
+    .switch[data-checked="true"] .switch__dot { transform: translateX(22px); }
+
+    /* Mobile menu */
+    .nav__menuBtn { display:none; }
+    @media (max-width: 860px) {
+      .nav__links { display:none; }
+      .nav__menuBtn { display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:10px; border:1px solid color-mix(in lab, var(--muted) 30%, transparent); cursor:pointer; background: transparent; color: var(--text); }
+      .drawer { position: fixed; inset: 0 0 0 auto; width: min(88vw, 360px); background: var(--surface); color: var(--text); transform: translateX(100%); transition: transform .3s ease; box-shadow: -30px 0 60px rgba(0,0,0,.25); z-index: 60; padding: 24px; display:flex; flex-direction:column; gap: 12px; }
+      .drawer[data-open="true"] { transform: translateX(0); }
+      .drawer a { padding: 14px 12px; border-radius: 10px; text-decoration: none; color: var(--text); }
+      .drawer a:hover { background: color-mix(in lab, var(--muted) 12%, transparent); }
+    }
+
+    /* Sections */
+    section { padding: clamp(48px, 8vw, 110px) 0; position: relative; }
+    .container { width: var(--container); margin-inline: auto; }
+    .grid { display:grid; gap: 26px; }
+
+    .badge { display:inline-flex; align-items:center; gap:8px; padding: 8px 12px; border-radius: 999px; font-size: .82rem; background: color-mix(in lab, var(--brand) 18%, transparent); border: 1px solid color-mix(in lab, var(--brand) 30%, transparent); }
+
+    /* Hero */
+    .hero { padding-top: calc(clamp(48px, 8vw, 110px) + 10px); }
+    .hero__inner { display:grid; grid-template-columns: 1.25fr 1fr; gap: 30px; align-items:center; }
+    @media (max-width: 980px) { .hero__inner { grid-template-columns: 1fr; } }
+
+    .headline { font-family: "Playfair Display", serif; font-weight: 800; letter-spacing:-0.6px; font-size: clamp(2rem, 2.5rem + 2vw, 4.5rem); line-height: 1.05; margin: 10px 0 16px; }
+    .headline__gradient { background: linear-gradient(90deg, var(--brand), var(--brand-2), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .sub { font-size: clamp(1rem, .6rem + .8vw, 1.22rem); opacity: .84; max-width: 70ch; }
+    .hero__cta { display:flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+
+    .device { aspect-ratio: 16/10; border-radius: var(--radius-xl); border: 1px solid color-mix(in lab, var(--muted) 20%, transparent); background: linear-gradient(135deg, color-mix(in lab, var(--surface) 86%, transparent), color-mix(in lab, var(--bg-soft) 70%, transparent)); position: relative; overflow: hidden; box-shadow: var(--shadow); }
+    .device__glow { position:absolute; inset: -30%; background: radial-gradient(50% 50% at 50% 50%, color-mix(in lab, var(--brand-2) 22%, transparent), transparent 60%); filter: blur(20px); animation: float 14s ease-in-out infinite; opacity: .9; }
+    .device__grid { position:absolute; inset: 0; background-image: linear-gradient(transparent 0 49%, color-mix(in lab, var(--muted) 14%, transparent) 50% 51%, transparent 52% 100%), linear-gradient(90deg, transparent 0 49%, color-mix(in lab, var(--muted) 14%, transparent) 50% 51%, transparent 52% 100%); background-size: 60px 60px; opacity: .35; }
+    .device__card { position:absolute; inset: auto 16px 16px auto; width: min(86%, 420px); border-radius: 18px; padding: 14px; background: color-mix(in lab, var(--surface) 78%, transparent); backdrop-filter: blur(8px); border:1px solid color-mix(in lab, var(--muted) 20%, transparent); box-shadow: var(--shadow); animation: pop-in .8s ease .3s both; }
+    .device__card h4 { margin: 6px 0 8px; font-size: 1.05rem; }
+    .device__card p { margin: 0; font-size: .92rem; opacity:.9; }
+
+    @keyframes float { 0%,100%{ transform: translateY(0)} 50%{ transform: translateY(-10px)} }
+    @keyframes pop-in { from { transform: translateY(12px); opacity:0 } to { transform: translateY(0); opacity:1 } }
+
+    /* Features (np. przewagi sklepu) */
+    .features__grid { display:grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    @media (max-width: 980px) { .features__grid { grid-template-columns: 1fr; } }
+    .card { border-radius: var(--radius-lg); padding: 22px; background: linear-gradient(180deg, color-mix(in lab, var(--surface) 90%, transparent), color-mix(in lab, var(--surface) 96%, transparent)); border:1px solid color-mix(in lab, var(--muted) 22%, transparent); box-shadow: var(--shadow); transform-style: preserve-3d; transition: transform .2s ease, box-shadow .2s ease; }
+    .card:hover { box-shadow: 0 20px 48px color-mix(in lab, var(--brand) 14%, black); }
+    .card__icon { width: 40px; height: 40px; border-radius: 12px; display:grid; place-items:center; background: color-mix(in lab, var(--brand) 20%, transparent); border:1px solid color-mix(in lab, var(--brand) 30%, transparent); box-shadow: var(--shadow); transform: translateZ(30px); }
+    .card h3 { margin: 12px 0 8px; font-size: 1.15rem; }
+    .card p { margin: 0; opacity:.88; }
+
+    /* Kategorie + produkty */
+    .showcase__grid { display:grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+    .tile { border-radius: 18px; min-height: 180px; background: color-mix(in lab, var(--bg-soft) 80%, transparent); border:1px solid color-mix(in lab, var(--muted) 18%, transparent); overflow: hidden; position: relative; box-shadow: var(--shadow); }
+    .tile__bg { position:absolute; inset: 0; background: conic-gradient(from 180deg at 50% 50%, color-mix(in lab, var(--brand) 28%, transparent), color-mix(in lab, var(--brand-2) 28%, transparent), color-mix(in lab, var(--accent) 28%, transparent), color-mix(in lab, var(--brand) 28%, transparent)); filter: blur(20px); opacity:.55; }
+    .tile__label { position:absolute; left: 12px; bottom: 12px; font-weight: 700; letter-spacing:.3px; padding: 8px 12px; border-radius: 999px; background: color-mix(in lab, var(--surface) 80%, transparent); border: 1px solid color-mix(in lab, var(--muted) 20%, transparent); box-shadow: var(--shadow); }
+
+    .tile--a { grid-column: span 7; min-height: 260px; }
+    .tile--b { grid-column: span 5; }
+    .tile--c { grid-column: span 4; }
+    .tile--d { grid-column: span 4; }
+    .tile--e { grid-column: span 4; }
+    @media (max-width:1000px){ .tile--a, .tile--b, .tile--c, .tile--d, .tile--e { grid-column: span 12; } }
+
+    /* Lista produktów (best-sellery) */
+    .products__grid { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 18px; }
+    @media (max-width: 1100px) { .products__grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+    @media (max-width: 860px) { .products__grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 560px) { .products__grid { grid-template-columns: 1fr; } }
+    .product-card { border-radius: 18px; overflow:hidden; background: color-mix(in lab, var(--surface) 94%, transparent); border:1px solid color-mix(in lab, var(--muted) 20%, transparent); box-shadow: var(--shadow); display:flex; flex-direction:column; }
+    .product-card__image { aspect-ratio: 4/3; background: color-mix(in lab, var(--bg-soft) 90%, transparent); }
+    .product-card__body { padding: 14px 14px 16px; display:flex; flex-direction:column; gap: 6px; }
+    .product-card__title { font-size: .95rem; font-weight: 600; }
+    .product-card__meta { display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:.85rem; color:var(--muted); }
+    .product-card__price { font-weight: 700; color: var(--success); }
+    .product-card__cta { margin-top: 10px; display:flex; justify-content:space-between; gap: 8px; }
+
+    /* Testimonials (opinie klientów) */
+    .slider { display: grid; gap: 12px; }
+    .slider__track { display:flex; gap: 14px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom: 10px; }
+    .slide { scroll-snap-align:center; min-width: min(88vw, 420px); background: linear-gradient(180deg, color-mix(in lab, var(--surface) 92%, transparent), color-mix(in lab, var(--surface) 98%, transparent)); border:1px solid color-mix(in lab, var(--muted) 20%, transparent); border-radius: 18px; padding: 18px; box-shadow: var(--shadow); }
+    .avatar { width: 42px; height: 42px; border-radius: 999px; background: radial-gradient(circle at 30% 28%, var(--brand), var(--brand-2)); box-shadow: var(--shadow); }
+
+    /* Pricing / zestawy / pakiety */
+    .pricing__toggle { display:flex; align-items:center; gap: 12px; justify-content:center; }
+    .pricing__grid { display:grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 18px; }
+    @media (max-width: 980px) { .pricing__grid { grid-template-columns: 1fr; } }
+    .plan { border-radius: 20px; background: linear-gradient(180deg, color-mix(in lab, var(--surface) 88%, transparent), color-mix(in lab, var(--surface) 96%, transparent)); border:1px solid color-mix(in lab, var(--muted) 22%, transparent); box-shadow: var(--shadow); padding: 22px; }
+    .plan--pro { border:1px solid color-mix(in lab, var(--brand) 38%, transparent); box-shadow: 0 24px 60px color-mix(in lab, var(--brand) 18%, black); }
+    .plan__price { font-size: clamp(2rem, 1.3rem + 1.8vw, 3rem); font-weight: 800; letter-spacing: -.5px; }
+    .plan__features { display:grid; gap: 8px; margin: 12px 0 14px; }
+
+    /* Contact */
+    .contact__card { border-radius: 22px; padding: 22px; background: linear-gradient(180deg, color-mix(in lab, var(--surface) 92%, transparent), color-mix(in lab, var(--surface) 98%, transparent)); border:1px solid color-mix(in lab, var(--muted) 22%, transparent); box-shadow: var(--shadow); }
+    .input { width: 100%; padding: 14px 14px; border-radius: 12px; background: color-mix(in lab, var(--bg-soft) 80%, transparent); border:1px solid color-mix(in lab, var(--muted) 22%, transparent); color: var(--text); font: inherit; }
+    .input:focus { outline: none; box-shadow: var(--ring); }
+    textarea.input { min-height: 130px; resize: vertical; }
+
+    /* Utilities */
+    .center { text-align:center; }
+    .muted { color: var(--muted); }
+    .pill { padding: 6px 10px; border:1px solid color-mix(in lab, var(--muted) 22%, transparent); background: color-mix(in lab, var(--bg-soft) 75%, transparent); border-radius: 999px; font-size: .82rem; }
+    .spacer-sm { height: 10px; }
+    .spacer { height: 24px; }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+
+    /* Scroll reveal base state */
+    [data-reveal] { opacity: 0; transform: translateY(14px); }
+    [data-reveal].is-visible { opacity: 1; transform: translateY(0); transition: opacity .6s ease, transform .6s ease; }
+
+    /* Scroll to top */
+    .top { position: fixed; right: 18px; bottom: 18px; width: 46px; height: 46px; border-radius: 999px; display:grid; place-items:center; background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: white; border: 0; cursor: pointer; box-shadow: var(--shadow); opacity: 0; transform: translateY(10px); transition: opacity .2s ease, transform .2s ease; }
+    .top.is-on { opacity: 1; transform: translateY(0); }
+
+    /* Footer */
+    footer { border-top: 1px solid color-mix(in lab, var(--muted) 18%, transparent); padding: 26px 0; background: color-mix(in lab, var(--bg-soft) 60%, transparent); }
+  </style>
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="nav" aria-label="Główna nawigacja">
+    <div class="nav__inner">
+      <div class="brand">
+        <div class="brand__logo" aria-hidden="true"></div>
+        <!-- PLACEHOLDER: BRAND_NAME -->
+        <span class="brand__text">BrandName</span>
+      </div>
+
+      <nav class="nav__links" aria-label="Sekcje strony">
+        <a href="#hero">Start</a>
+        <a href="#categories">Kategorie</a>
+        <a href="#products">Produkty</a>
+        <a href="#pricing">Zestawy / pakiety</a>
+        <a href="#contact">Kontakt</a>
+        <!-- PLACEHOLDER: AUTH_LINK (logowanie / panel klienta) -->
+        <a href="#auth" aria-label="Logowanie (placeholder)">Zaloguj</a>
+        <span class="theme" aria-label="Przełącz motyw">
+          <span class="pill">Motyw</span>
+          <div class="switch" id="themeSwitch" role="switch" aria-checked="false" tabindex="0"><div class="switch__dot"></div></div>
+        </span>
+      </nav>
+
+      <button class="nav__menuBtn" id="menuBtn" aria-expanded="false" aria-controls="drawer">Menu ▾</button>
+    </div>
+  </header>
+
+  <!-- Drawer for mobile -->
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="brand" style="margin-bottom:10px">
+      <div class="brand__logo"></div>
+      <!-- PLACEHOLDER: BRAND_NAME_MOBILE -->
+      <span class="brand__text">BrandName</span>
+    </div>
+    <a href="#hero">Start</a>
+    <a href="#categories">Kategorie</a>
+    <a href="#products">Produkty</a>
+    <a href="#pricing">Zestawy / pakiety</a>
+    <a href="#contact">Kontakt</a>
+    <!-- PLACEHOLDER: AUTH_LINK_MOBILE -->
+    <a href="#auth">Zaloguj</a>
+    <div class="spacer"></div>
+    <div class="theme">
+      <span class="pill">Motyw</span>
+      <div class="switch" id="themeSwitch2" role="switch" aria-checked="false" tabindex="0"><div class="switch__dot"></div></div>
+    </div>
+  </aside>
+
+  <!-- Hero -->
+  <section id="hero" class="hero">
+    <div class="container hero__inner">
+      <div>
+        <span class="badge" data-reveal>
+          <!-- PLACEHOLDER: HERO_BADGE -->
+          🛒 Nowoczesny szablon sklepu
+        </span>
+        <h1 class="headline" data-reveal>
+          <!-- PLACEHOLDER: HERO_TITLE -->
+          Twój <span class="headline__gradient">sklep internetowy</span>, który pięknie prezentuje produkty i kategorie
+        </h1>
+        <p class="sub" data-reveal>
+          <!-- PLACEHOLDER: HERO_SUBTITLE -->
+          Minimalistyczny layout, czytelne kategorie, sekcja best-sellerów i miejsce na integrację z dowolnym systemem sprzedaży – wszystko w jednym szablonie.
+        </p>
+        <div class="hero__cta" data-reveal>
+          <!-- PLACEHOLDER: HERO_PRIMARY_CTA -->
+          <a class="btn" href="#products">Przeglądaj produkty</a>
+          <!-- PLACEHOLDER: HERO_SECONDARY_CTA -->
+          <a class="btn btn--ghost" href="#categories">Zobacz kategorie</a>
+        </div>
+      </div>
+      <div class="device" aria-label="Podgląd katalogu produktów">
+        <div class="device__glow" aria-hidden="true"></div>
+        <div class="device__grid" aria-hidden="true"></div>
+        <div class="device__card" aria-live="polite">
+          <span class="pill">
+            <!-- PLACEHOLDER: HERO_DEVICE_PILL -->
+            Widok listy produktów
+          </span>
+          <h4>
+            <!-- PLACEHOLDER: HERO_DEVICE_TITLE -->
+            Karty produktów z ceną i CTA
+          </h4>
+          <p>
+            <!-- PLACEHOLDER: HERO_DEVICE_TEXT -->
+            Sekcja produktowa zaprojektowana z myślą o czytelności: zdjęcia, nazwa, krótki opis, cena i przycisk „do koszyka”.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features: przewagi sklepu -->
+  <section id="features">
+    <div class="container">
+      <div class="center" style="margin-bottom: 24px">
+        <span class="badge" data-reveal> <!-- PLACEHOLDER: FEATURES_BADGE -->Co wyróżnia ten sklep</span>
+        <h2 class="headline" style="font-size: clamp(1.6rem,1.2rem + 1.2vw,2.4rem)" data-reveal>
+          <!-- PLACEHOLDER: FEATURES_TITLE -->
+          Dojrzały front dla katalogu produktów
+        </h2>
+        <p class="sub" data-reveal>
+          <!-- PLACEHOLDER: FEATURES_SUBTITLE -->
+          Projekt zakłada jasny podział na kategorie, sekcje best-sellerów i elastyczne miejsce na integracje: koszyk, logowanie, panel klienta.
+        </p>
+      </div>
+
+      <div class="features__grid">
+        <!-- PLACEHOLDER: FEATURES_CARDS_START (3–4 feature boxy) -->
+        <article class="card tilt" data-reveal>
+          <div class="card__icon" aria-hidden="true">🧩</div>
+          <h3>Gotowy pod integrację</h3>
+          <p>Możesz dołączyć dowolny backend e-commerce (API, headless, SaaS), nie ruszając stylistyki frontu.</p>
+        </article>
+        <article class="card tilt" data-reveal>
+          <div class="card__icon" aria-hidden="true">📂</div>
+          <h3>Czytelne kategorie</h3>
+          <p>Struktura zaprojektowana tak, aby od razu było widać główne działy oferty i łatwo przejść do listy produktów.</p>
+        </article>
+        <article class="card tilt" data-reveal>
+          <div class="card__icon" aria-hidden="true">🛒</div>
+          <h3>Sekcja best-sellerów</h3>
+          <p>Specjalna siatka na produkty wyróżnione: promocje, nowości, najczęściej kupowane – do zasilenia z bazy.</p>
+        </article>
+        <!-- PLACEHOLDER: FEATURES_CARDS_END -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Kategorie produktów -->
+  <section id="categories">
+    <div class="container">
+      <div class="center" style="margin-bottom: 18px">
+        <span class="badge" data-reveal> <!-- PLACEHOLDER: CATEGORIES_BADGE -->Kategorie produktów</span>
+        <h2 class="headline" style="font-size: clamp(1.6rem,1.2rem + 1.2vw,2.4rem)" data-reveal>
+          <!-- PLACEHOLDER: CATEGORIES_TITLE -->
+          Przegląd głównych działów sklepu
+        </h2>
+        <p class="sub" data-reveal>
+          <!-- PLACEHOLDER: CATEGORIES_SUBTITLE -->
+          Każda kafelka może reprezentować kategorię z bazy danych: od ogólnych działów po bardziej szczegółowe segmenty.
+        </p>
+      </div>
+      <div class="showcase__grid">
+        <!-- PLACEHOLDER: CATEGORIES_GRID_START (np. 5 kafli kategorii) -->
+        <div class="tile tile--a" data-reveal>
+          <div class="tile__bg"></div>
+          <span class="tile__label">
+            <!-- PLACEHOLDER: CATEGORY_TILE_MAIN -->
+            Kategoria główna A
+          </span>
+        </div>
+        <div class="tile tile--b" data-reveal>
+          <div class="tile__bg"></div>
+          <span class="tile__label">
+            <!-- PLACEHOLDER: CATEGORY_TILE_SECOND -->
+            Kategoria główna B
+          </span>
+        </div>
+        <div class="tile tile--c" data-reveal>
+          <div class="tile__bg"></div>
+          <span class="tile__label">Kategoria C</span>
+        </div>
+        <div class="tile tile--d" data-reveal>
+          <div class="tile__bg"></div>
+          <span class="tile__label">Kategoria D</span>
+        </div>
+        <div class="tile tile--e" data-reveal>
+          <div class="tile__bg"></div>
+          <span class="tile__label">Kategoria E</span>
+        </div>
+        <!-- PLACEHOLDER: CATEGORIES_GRID_END -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Lista produktów / best-sellery -->
+  <section id="products">
+    <div class="container">
+      <div class="center" style="margin-bottom: 18px">
+        <span class="badge" data-reveal> <!-- PLACEHOLDER: PRODUCTS_BADGE -->Produkty</span>
+        <h2 class="headline" style="font-size: clamp(1.6rem,1.2rem + 1.2vw,2.4rem)" data-reveal>
+          <!-- PLACEHOLDER: PRODUCTS_TITLE -->
+          Best-sellery i wyróżnione pozycje
+        </h2>
+        <p class="sub" data-reveal>
+          <!-- PLACEHOLDER: PRODUCTS_SUBTITLE -->
+          Ta sekcja może prezentować produkty z różnych kategorii: najczęściej kupowane, promocyjne albo nowości, zasilane z API lub lokalnych danych.
+        </p>
+      </div>
+
+      <div class="products__grid">
+        <!-- PLACEHOLDER: PRODUCTS_GRID_START (później pętla po produktach) -->
+        <article class="product-card" data-reveal>
+          <div class="product-card__image">
+            <!-- PLACEHOLDER: PRODUCT_IMAGE (np. background-image albo <img>) -->
+          </div>
+          <div class="product-card__body">
+            <div class="product-card__title">
+              <!-- PLACEHOLDER: PRODUCT_NAME -->
+              Produkt przykładowy 1
+            </div>
+            <div class="muted" style="font-size:.85rem">
+              <!-- PLACEHOLDER: PRODUCT_SHORT_DESCRIPTION -->
+              Krótki opis produktu, parametry lub zastosowanie.
+            </div>
+            <div class="product-card__meta">
+              <span>
+                <!-- PLACEHOLDER: PRODUCT_CATEGORY_NAME -->
+                Kategoria ▸ Podkategoria
+              </span>
+              <span class="product-card__price">
+                <!-- PLACEHOLDER: PRODUCT_PRICE -->
+                99,00 zł
+              </span>
+            </div>
+            <div class="product-card__cta">
+              <!-- PLACEHOLDER: PRODUCT_PRIMARY_ACTION -->
+              <button class="btn" style="flex:1">Do koszyka</button>
+              <!-- PLACEHOLDER: PRODUCT_SECONDARY_ACTION -->
+              <button class="btn btn--ghost" style="flex:1">Szczegóły</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card" data-reveal>
+          <div class="product-card__image"></div>
+          <div class="product-card__body">
+            <div class="product-card__title">Produkt przykładowy 2</div>
+            <div class="muted" style="font-size:.85rem">Opis placeholder – do zastąpienia danymi z bazy.</div>
+            <div class="product-card__meta">
+              <span>Kategoria ▸ Podkategoria</span>
+              <span class="product-card__price">149,00 zł</span>
+            </div>
+            <div class="product-card__cta">
+              <button class="btn" style="flex:1">Do koszyka</button>
+              <button class="btn btn--ghost" style="flex:1">Szczegóły</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card" data-reveal>
+          <div class="product-card__image"></div>
+          <div class="product-card__body">
+            <div class="product-card__title">Produkt przykładowy 3</div>
+            <div class="muted" style="font-size:.85rem">Opis placeholder – np. główne cechy.</div>
+            <div class="product-card__meta">
+              <span>Kategoria ▸ Podkategoria</span>
+              <span class="product-card__price">59,00 zł</span>
+            </div>
+            <div class="product-card__cta">
+              <button class="btn" style="flex:1">Do koszyka</button>
+              <button class="btn btn--ghost" style="flex:1">Szczegóły</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card" data-reveal>
+          <div class="product-card__image"></div>
+          <div class="product-card__body">
+            <div class="product-card__title">Produkt przykładowy 4</div>
+            <div class="muted" style="font-size:.85rem">Opis placeholder – można wypełnić dynamicznie.</div>
+            <div class="product-card__meta">
+              <span>Kategoria ▸ Podkategoria</span>
+              <span class="product-card__price">79,00 zł</span>
+            </div>
+            <div class="product-card__cta">
+              <button class="btn" style="flex:1">Do koszyka</button>
+              <button class="btn btn--ghost" style="flex:1">Szczegóły</button>
+            </div>
+          </div>
+        </article>
+        <!-- PLACEHOLDER: PRODUCTS_GRID_END -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section id="testimonials">
+    <div class="container">
+      <div class="center" style="margin-bottom: 14px">
+        <span class="badge" data-reveal> <!-- PLACEHOLDER: TESTIMONIALS_BADGE -->Opinie klientów</span>
+        <h2 class="headline" style="font-size: clamp(1.6rem,1.2rem + 1.2vw,2.4rem)" data-reveal>
+          <!-- PLACEHOLDER: TESTIMONIALS_TITLE -->
+          Jak użytkownicy oceniają sklep
+        </h2>
+      </div>
+      <div class="slider" data-reveal>
+        <div class="slider__track" id="slider">
+          <!-- PLACEHOLDER: TESTIMONIALS_SLIDES_START -->
+          <article class="slide">
+            <header style="display:flex; align-items:center; gap:10px">
+              <div class="avatar" aria-hidden="true"></div>
+              <div>
+                <strong><!-- PLACEHOLDER: TESTIMONIAL_NAME_1 -->Anna</strong>
+                <div class="muted" style="font-size:.9rem"><!-- PLACEHOLDER: TESTIMONIAL_ROLE_1 -->Klientka</div>
+              </div>
+            </header>
+            <p>
+              <!-- PLACEHOLDER: TESTIMONIAL_TEXT_1 -->
+              „Sklep jest przejrzysty, produkty dobrze opisane, a proces zamówienia wygodny i szybki.”
+            </p>
+          </article>
+          <article class="slide">
+            <header style="display:flex; align-items:center; gap:10px">
+              <div class="avatar"></div>
+              <div>
+                <strong>Jan</strong>
+                <div class="muted" style="font-size:.9rem">Kupujący</div>
+              </div>
+            </header>
+            <p>„Zdjęcia produktów są czytelne, a design sklepu sprawia, że chce się tu zostać na dłużej.”</p>
+          </article>
+          <article class="slide">
+            <header style="display:flex; align-items:center; gap:10px">
+              <div class="avatar"></div>
+              <div>
+                <strong>Marta</strong>
+                <div class="muted" style="font-size:.9rem">Stała klientka</div>
+              </div>
+            </header>
+            <p>„Cenię prostotę nawigacji i to, że szybko znajduję to, czego szukam.”</p>
+          </article>
+          <!-- PLACEHOLDER: TESTIMONIALS_SLIDES_END -->
+        </div>
+        <div style="display:flex; gap:10px; justify-content:center">
+          <button class="btn btn--ghost" id="prev">◀︎</button>
+          <button class="btn" id="next">▶︎</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing / zestawy / pakiety -->
+  <section id="pricing">
+    <div class="container">
+      <div class="center" style="margin-bottom: 10px">
+        <span class="badge" data-reveal> <!-- PLACEHOLDER: PRICING_BADGE -->Zestawy / pakiety</span>
+        <h2 class="headline" style="font-size: clamp(1.6rem,1.2rem + 1.2vw,2.4rem)" data-reveal>
+          <!-- PLACEHOLDER: PRICING_TITLE -->
+          Przykładowe pakiety lub abonamenty
+        </h2>
+      </div>
+      <div class="pricing__toggle" data-reveal>
+        <span class="pill">Tryb prezentacji:</span>
+        <div class="switch" id="priceSwitch" role="switch" aria-checked="false" tabindex="0"><div class="switch__dot"></div></div>
+        <span class="pill" id="priceMode">
+          <!-- PLACEHOLDER: PRICING_MODE_LABEL -->
+          miesięcznie
+        </span>
+      </div>
+
+      <div class="pricing__grid">
+        <!-- PLACEHOLDER: PRICING_PLANS_START -->
+        <article class="plan" data-reveal>
+          <h3><!-- PLACEHOLDER: PLAN_NAME_1 -->Pakiet Start</h3>
+          <div class="plan__price" data-price="49">
+            <!-- PLACEHOLDER: PLAN_PRICE_1 -->
+            49 zł
+          </div>
+          <div class="muted"><!-- PLACEHOLDER: PLAN_TAGLINE_1 -->dla mniejszych koszyków</div>
+          <div class="plan__features">
+            <div>• <!-- PLACEHOLDER: PLAN_FEATURE_1_1 -->X produktów miesięcznie</div>
+            <div>• <!-- PLACEHOLDER: PLAN_FEATURE_1_2 -->Podstawowe wsparcie</div>
+            <div>• <!-- PLACEHOLDER: PLAN_FEATURE_1_3 -->Prezentacja w katalogu</div>
+          </div>
+          <button class="btn" aria-label="Wybierz pakiet Start">Wybierz</button>
+        </article>
+        <article class="plan plan--pro" data-reveal>
+          <h3>Pakiet Pro</h3>
+          <div class="plan__price" data-price="149">149 zł</div>
+          <div class="muted">dla sklepów rozwijających się</div>
+          <div class="plan__features">
+            <div>• Rozszerzona liczba produktów</div>
+            <div>• Priorytetowe wsparcie</div>
+            <div>• Dodatkowe sekcje ekspozycji</div>
+          </div>
+          <button class="btn" aria-label="Wybierz pakiet Pro">Wybierz</button>
+        </article>
+        <article class="plan" data-reveal>
+          <h3>Pakiet Premium</h3>
+          <div class="plan__price" data-price="349">349 zł</div>
+          <div class="muted">dla marek o dużym wolumenie</div>
+          <div class="plan__features">
+            <div>• Maksymalna widoczność</div>
+            <div>• Dedykowany opiekun</div>
+            <div>• Dodatkowe sekcje promocyjne</div>
+          </div>
+          <button class="btn" aria-label="Wybierz pakiet Premium">Wybierz</button>
+        </article>
+        <!-- PLACEHOLDER: PRICING_PLANS_END -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <div class="container">
+      <div class="grid" style="grid-template-columns: 1.1fr .9fr; align-items: start; gap: 26px">
+        <div>
+          <span class="badge" data-reveal>
+            <!-- PLACEHOLDER: CONTACT_BADGE -->
+            Skontaktuj się
+          </span>
+          <h2 class="headline" style="font-size: clamp(1.6rem,1.2rem + 1.2vw,2.2rem)" data-reveal>
+            <!-- PLACEHOLDER: CONTACT_TITLE -->
+            Chcesz wykorzystać ten szablon jako sklep?
+          </h2>
+          <p class="sub" data-reveal>
+            <!-- PLACEHOLDER: CONTACT_SUBTITLE -->
+            Formularz jest demonstracyjny. Możesz podłączyć dowolny backend lub usługę no-code, by zbierać zgłoszenia, zamówienia lub zapytania ofertowe.
+          </p>
+          <div class="spacer"></div>
+          <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 12px">
+            <div class="contact__card" data-reveal>
+              <div class="muted">Przykładowy czas wdrożenia</div>
+              <div style="font-weight:800; font-size: 1.3rem">
+                <!-- PLACEHOLDER: CONTACT_STAT_1 -->
+                1–2 tygodnie
+              </div>
+            </div>
+            <div class="contact__card" data-reveal>
+              <div class="muted">Technologia frontu</div>
+              <div style="font-weight:800; font-size: 1.3rem">
+                <!-- PLACEHOLDER: CONTACT_STAT_2 -->
+                HTML • CSS • JS
+              </div>
+            </div>
+          </div>
+          <!-- PLACEHOLDER: ADMIN_PANEL_INFO -->
+          <div class="spacer-sm"></div>
+          <p class="muted" style="font-size:.85rem">
+            Miejsce pod integrację: logowanie użytkowników, panel klienta, a w przyszłości także panel administratora / panel sprzedawcy.
+          </p>
+        </div>
+        <form class="contact__card" onsubmit="event.preventDefault(); alert('Dzięki! (demo)')" aria-label="Formularz kontaktowy">
+          <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 12px">
+            <label>
+              <div class="muted">Imię</div>
+              <input class="input" required placeholder="Jan" />
+            </label>
+            <label>
+              <div class="muted">E-mail</div>
+              <input class="input" type="email" required placeholder="jan@firma.pl" />
+            </label>
+          </div>
+          <div class="spacer-sm"></div>
+          <label>
+            <div class="muted">Wiadomość</div>
+            <textarea class="input" placeholder="Opisz krótko, do czego potrzebujesz tego szablonu…" required></textarea>
+          </label>
+          <div class="spacer-sm"></div>
+          <button class="btn" style="width:100%">Wyślij</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Placeholder dla logowania / panelu admina (do rozwinięcia w przyszłości) -->
+  <section id="auth">
+    <div class="container">
+      <div class="contact__card" data-reveal>
+        <h2 class="headline" style="font-size: clamp(1.4rem,1.1rem + 1vw,2rem); margin-bottom:8px">
+          <!-- PLACEHOLDER: AUTH_SECTION_TITLE -->
+          Miejsce na logowanie i panel administracyjny
+        </h2>
+        <p class="sub" style="font-size:.95rem" data-reveal>
+          <!-- PLACEHOLDER: AUTH_SECTION_TEXT -->
+          Tutaj możesz w przyszłości podpiąć:
+          • logowanie klientów,
+          • rejestrację kont,
+          • panel użytkownika (zamówienia, dane adresowe),
+          • panel administratora do zarządzania produktami, kategoriami i zamówieniami.
+        </p>
+        <!-- PLACEHOLDER: AUTH_FORM_OR_LINKS -->
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container" style="display:flex; justify-content:space-between; align-items:center; gap: 12px; flex-wrap: wrap;">
+      <div class="brand">
+        <div class="brand__logo"></div>
+        <!-- PLACEHOLDER: BRAND_NAME_FOOTER -->
+        <span class="brand__text">BrandName</span>
+      </div>
+      <div class="muted">
+        © <span id="y"></span>
+        <!-- PLACEHOLDER: FOOTER_COPY -->
+        BrandName. Szablon sklepu internetowego ✦
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scroll to top -->
+  <button class="top" id="toTop" aria-label="Do góry">↑</button>
+
+  <script>
+    // Year
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // THEME TOGGLE with localStorage
+    const root = document.documentElement;
+    const themeSwitch = document.getElementById('themeSwitch');
+    const themeSwitch2 = document.getElementById('themeSwitch2');
+    const STORAGE_KEY = 'template-theme';
+
+    function setTheme(mode){
+      if(mode === 'light') { root.setAttribute('data-theme','light'); } 
+      else { root.removeAttribute('data-theme'); }
+      localStorage.setItem(STORAGE_KEY, mode);
+      const checked = mode === 'light';
+      [themeSwitch, themeSwitch2].forEach(sw => { if(!sw) return; sw.dataset.checked = checked; sw.setAttribute('aria-checked', checked); });
+    }
+
+    const saved = localStorage.getItem(STORAGE_KEY);
+    setTheme(saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+
+    [themeSwitch, themeSwitch2].forEach(sw => {
+      sw?.addEventListener('click', () => setTheme(root.getAttribute('data-theme') === 'light' ? 'dark' : 'light'));
+      sw?.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); sw.click(); }});
+    });
+
+    // MOBILE DRAWER
+    const drawer = document.getElementById('drawer');
+    const menuBtn = document.getElementById('menuBtn');
+    menuBtn.addEventListener('click', () => {
+      const open = drawer.getAttribute('data-open') === 'true';
+      drawer.setAttribute('data-open', !open);
+      drawer.setAttribute('aria-hidden', open);
+      menuBtn.setAttribute('aria-expanded', !open);
+    });
+    drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { drawer.setAttribute('data-open', false); drawer.setAttribute('aria-hidden', true); menuBtn.setAttribute('aria-expanded', false);} ));
+
+    // SCROLL REVEAL
+    const revealEls = document.querySelectorAll('[data-reveal]');
+    const io = new IntersectionObserver((entries) => {
+      for(const e of entries) { if(e.isIntersecting) e.target.classList.add('is-visible'); }
+    }, { threshold: 0.14 });
+    revealEls.forEach(el => io.observe(el));
+
+    // CARD TILT
+    const tiltEls = document.querySelectorAll('.tilt');
+    const tilt = (e) => {
+      const el = e.currentTarget; const r = el.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width; const py = (e.clientY - r.top) / r.height;
+      const rx = (py - .5) * 6; const ry = (px - .5) * -8;
+      el.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    };
+    const resetTilt = (e) => { e.currentTarget.style.transform = 'perspective(800px) rotateX(0) rotateY(0)'; };
+    tiltEls.forEach(el => {
+      el.addEventListener('mousemove', tilt);
+      el.addEventListener('mouseleave', resetTilt);
+      el.addEventListener('blur', resetTilt);
+    });
+
+    // SLIDER
+    const track = document.getElementById('slider');
+    document.getElementById('prev').addEventListener('click', () => track.scrollBy({left: -420, behavior:'smooth'}));
+    document.getElementById('next').addEventListener('click', () => track.scrollBy({left: 420, behavior:'smooth'}));
+
+    // PRICING TOGGLE (np. /mies vs /rok albo inne tryby)
+    const priceSwitch = document.getElementById('priceSwitch');
+    const priceMode = document.getElementById('priceMode');
+    const priceEls = Array.from(document.querySelectorAll('[data-price]'));
+    let yearly = false;
+    const updatePrices = () => {
+      priceEls.forEach(el => {
+        const base = Number(el.dataset.price);
+        const value = yearly ? Math.round(base * 10) : base; // przykład: przeliczenie dla trybu rocznego
+        el.textContent = value + ' zł';
+      });
+      priceMode.textContent = yearly ? 'rocznie' : 'miesięcznie';
+      priceSwitch.dataset.checked = yearly; priceSwitch.setAttribute('aria-checked', yearly);
+    };
+    priceSwitch.addEventListener('click', () => { yearly = !yearly; updatePrices(); });
+    priceSwitch.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); priceSwitch.click(); }});
+    updatePrices();
+
+    // SCROLL TO TOP
+    const toTop = document.getElementById('toTop');
+    const onScroll = () => {
+      if (window.scrollY > 500) toTop.classList.add('is-on'); else toTop.classList.remove('is-on');
+    };
+    window.addEventListener('scroll', onScroll);
+    toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  </script>
+</body>
+</html>
