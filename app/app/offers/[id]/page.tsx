@@ -1,48 +1,90 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
-import { useSearchParams, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 
 export default function OfferDetails() {
   const params = useParams<{ id: string }>();
   const [offer, setOffer] = useState<any>(null);
   const [qty, setQty] = useState("1");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     apiFetch(`/api/offers/${params.id}`).then(setOffer);
   }, [params.id]);
 
-  if (!offer) return <div>Loading...</div>;
+  if (!offer) return <div className="muted">Ładowanie...</div>;
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow space-y-3">
-      <h1 className="text-xl font-semibold">{offer.product_name}</h1>
-      <div className="text-sm text-slate-600">{offer.product_category} • {offer.location}</div>
-      <div>{offer.unit_price} {offer.currency} / {offer.unit_of_measure}</div>
-      <div className="text-sm">Available: {offer.quantity}</div>
-      <p className="text-slate-700">{offer.description}</p>
+    <section>
+      <div className="container grid">
+        <div className="badge">Szczegóły oferty #{offer.id}</div>
+        <div className="device">
+          <div className="device__glow" />
+          <div className="device__grid" />
+          <div className="device__card">
+            <div className="pill">{offer.product_category}</div>
+            <h4>{offer.product_name}</h4>
+            <p className="muted">
+              {offer.unit_price} {offer.currency} / {offer.unit_of_measure} • {offer.location}
+            </p>
+          </div>
+        </div>
 
-      <div className="pt-4 border-t">
-        <label className="block text-sm mb-1">Order quantity</label>
-        <input type="number" className="border p-2 rounded w-40" value={qty} onChange={e=>setQty(e.target.value)} />
-        <button
-          onClick={async () => {
-            try{
-              await apiFetch("/api/orders", {
-                method: "POST",
-                body: JSON.stringify({ offer_id: Number(offer.id), quantity: Number(qty) })
-              });
-              alert("Order placed");
-              window.location.href = "/orders";
-            } catch (e:any) {
-              alert(e.message);
-            }
-          }}
-          className="ml-3 bg-black text-white px-4 py-2 rounded"
-        >
-          Order
-        </button>
+        <div className="contact__card stack">
+          <div className="grid" style={{ gap: 6 }}>
+            <div className="muted text-sm">Identyfikator SKU</div>
+            <div className="product-card__title">{offer.sku || "Brak"}</div>
+          </div>
+          <div className="muted">{offer.description || "Brak opisu"}</div>
+          <div className="product-card__meta">
+            <span>Dostępna ilość: {offer.quantity}</span>
+            <span className="product-card__price">
+              {offer.unit_price} {offer.currency}
+            </span>
+          </div>
+
+          <div className="divider" />
+
+          <label className="stack">
+            <span className="muted text-sm">Zamawiana ilość</span>
+            <input
+              type="number"
+              min={1}
+              className="input"
+              value={qty}
+              onChange={(e) => setQty(e.target.value)}
+            />
+          </label>
+          <div className="hero__cta">
+            <button
+              onClick={async () => {
+                try {
+                  setSubmitting(true);
+                  await apiFetch("/api/orders", {
+                    method: "POST",
+                    body: JSON.stringify({ offer_id: Number(offer.id), quantity: Number(qty) }),
+                  });
+                  alert("Order placed");
+                  window.location.href = "/orders";
+                } catch (e: any) {
+                  alert(e.message);
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
+              className="btn"
+              disabled={submitting}
+            >
+              {submitting ? "Przetwarzam..." : "Zamów"}
+            </button>
+            <Link href="/offers" className="btn btn--ghost">
+              Wróć do listy
+            </Link>
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

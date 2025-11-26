@@ -4,21 +4,30 @@ import { apiFetch } from "@/lib/api";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
-  useEffect(()=>{ apiFetch("/api/orders/mine").then(setOrders).catch(()=>setOrders([])); },[]);
+  useEffect(() => {
+    apiFetch("/api/orders/mine").then(setOrders).catch(() => setOrders([]));
+  }, []);
   return (
-    <div>
-      <h1 className="text-xl font-semibold mb-4">My Orders</h1>
-      <div className="space-y-3">
-        {orders.map(o=>(
-          <div key={o.id} className="bg-white p-4 rounded-xl shadow">
-            <div className="font-medium">Order #{o.id}</div>
-            <div className="text-sm text-slate-600">offer_id: {o.offer_id}</div>
-            <div>qty: {o.quantity} • price: {o.unit_price_snapshot}</div>
-            <div className="text-sm">status: {o.status}</div>
-          </div>
-        ))}
-        {!orders.length && <div className="text-slate-600">No orders yet.</div>}
+    <section>
+      <div className="container grid">
+        <div className="badge">Twoje zamówienia</div>
+        <div className="grid" style={{ gap: 16 }}>
+          {orders.map((o) => (
+            <div key={o.id} className="card">
+              <div className="product-card__meta">
+                <span>Order #{o.id}</span>
+                <span className="pill">{o.status}</span>
+              </div>
+              <div className="muted text-sm">Oferta: {o.offer_id}</div>
+              <div className="product-card__meta">
+                <span>Ilość: {o.quantity}</span>
+                <span className="product-card__price">{o.unit_price_snapshot}</span>
+              </div>
+            </div>
+          ))}
+          {!orders.length && <div className="muted">Nie masz jeszcze żadnych zamówień.</div>}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 
@@ -22,30 +23,113 @@ export default function OffersPage() {
     setOffers(data);
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Offers</h1>
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
-        <input placeholder="q" className="border p-2 rounded" value={q} onChange={e=>setQ(e.target.value)} />
-        <input placeholder="category" className="border p-2 rounded" value={category} onChange={e=>setCategory(e.target.value)} />
-        <input placeholder="min price" className="border p-2 rounded" value={min_price} onChange={e=>setMin(e.target.value)} />
-        <input placeholder="max price" className="border p-2 rounded" value={max_price} onChange={e=>setMax(e.target.value)} />
-        <input placeholder="location" className="border p-2 rounded" value={location} onChange={e=>setLocation(e.target.value)} />
-      </div>
-      <button onClick={load} className="bg-black text-white px-4 py-2 rounded">Search</button>
+    <>
+      <section className="hero">
+        <div className="container">
+          <div className="hero__inner">
+            <div>
+              <div className="badge">Oferty producentów</div>
+              <h1 className="headline">
+                Wybierz <span className="headline__gradient">najlepszą ofertę</span> dla swojego biznesu
+              </h1>
+              <p className="sub">
+                Filtruj propozycje według kategorii, ceny i lokalizacji. Wszystkie dane pozostają aktualne, a każdą ofertę
+                możesz szybko otworzyć, by złożyć zamówienie.
+              </p>
+              <div className="hero__cta">
+                <button onClick={load} className="btn">
+                  Odśwież wyniki
+                </button>
+                <Link href="/offers/new" className="btn btn--ghost">
+                  Dodaj ofertę
+                </Link>
+              </div>
+            </div>
+            <div className="device">
+              <div className="device__glow" />
+              <div className="device__grid" />
+              <div className="device__card">
+                <div className="pill">Aktywne oferty</div>
+                <h4>{offers.length ? `${offers.length} produktów` : "Czekaj na wyniki..."}</h4>
+                <p className="muted">Dynamicznie ładowane z API i filtrowane według Twoich potrzeb.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        {offers.map(o => (
-          <a key={o.id} href={`/offers/${o.id}`} className="bg-white rounded-xl shadow p-4 hover:shadow-md">
-            <div className="font-semibold">{o.product_name}</div>
-            <div className="text-sm text-slate-600">{o.product_category} • {o.location}</div>
-            <div className="mt-2">{o.unit_price} {o.currency} / {o.unit_of_measure}</div>
-            <div className="text-sm text-slate-600">Qty: {o.quantity}</div>
-          </a>
-        ))}
-      </div>
-    </div>
+      <section>
+        <div className="container grid">
+          <div className="card">
+            <div className="badge">Filtry</div>
+            <div className="form-grid">
+              <input placeholder="Szukaj po nazwie" className="input" value={q} onChange={(e) => setQ(e.target.value)} />
+              <input placeholder="Kategoria" className="input" value={category} onChange={(e) => setCategory(e.target.value)} />
+              <input
+                placeholder="Cena minimalna"
+                className="input"
+                value={min_price}
+                onChange={(e) => setMin(e.target.value)}
+              />
+              <input
+                placeholder="Cena maksymalna"
+                className="input"
+                value={max_price}
+                onChange={(e) => setMax(e.target.value)}
+              />
+              <input placeholder="Lokalizacja" className="input" value={location} onChange={(e) => setLocation(e.target.value)} />
+            </div>
+            <div className="hero__cta" style={{ marginTop: 16 }}>
+              <button onClick={load} className="btn">
+                Filtruj oferty
+              </button>
+              <button
+                onClick={() => {
+                  setQ("");
+                  setCategory("");
+                  setMin("");
+                  setMax("");
+                  setLocation("");
+                  load();
+                }}
+                className="btn btn--ghost"
+              >
+                Wyczyść
+              </button>
+            </div>
+          </div>
+
+          <div className="grid" style={{ gap: 16 }}>
+            <div className="products__grid">
+              {offers.map((o) => (
+                <Link key={o.id} href={`/offers/${o.id}`} className="product-card">
+                  <div className="product-card__image">{o.product_category}</div>
+                  <div className="product-card__body">
+                    <div className="product-card__title">{o.product_name}</div>
+                    <div className="product-card__meta">
+                      <span>{o.location}</span>
+                      <span className="product-card__price">
+                        {o.unit_price} {o.currency}
+                      </span>
+                    </div>
+                    <div className="muted text-sm">Dostępna ilość: {o.quantity}</div>
+                    <div className="product-card__cta">
+                      <span className="pill">{o.unit_of_measure}</span>
+                      <span className="pill">Szczegóły</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            {!offers.length && <div className="muted">Brak ofert spełniających kryteria.</div>}
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
