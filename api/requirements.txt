@@ -5,4 +5,7 @@ SQLAlchemy==2.0.35
 pydantic==2.9.2
 python-jose==3.3.0
 passlib[bcrypt]==1.7.4
+# passlib 1.7.x expects bcrypt's __about__ attribute which was removed in
+# bcrypt 4.x/5.x; pin to a compatible release to keep seeding and auth working.
+bcrypt==3.2.2
 python-dotenv==1.0.1
