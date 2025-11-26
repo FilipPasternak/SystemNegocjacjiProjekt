@@ -24,6 +24,12 @@ class UserPublic(SQLModel):
     role: UserRole
     created_at: datetime
 
+
+class StatsOverview(SQLModel):
+    active_offers: int
+    producers: int
+    buyers: int
+
 # Offer
 class OfferBase(SQLModel):
     product_name: str
