@@ -202,11 +202,6 @@ body {
   display: none;
 }
 
-.drawer {
-  display: none;
-}
-
-
 @media (max-width: 860px) {
   .nav__links {
     display: none;

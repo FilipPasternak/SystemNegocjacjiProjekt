@@ -4,7 +4,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DB_URL = os.getenv("DB_URL", "sqlite:///./app.db")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+default_sqlite_path = os.path.join(BASE_DIR, "app.db")
+DB_URL = os.getenv("DB_URL", f"sqlite:///{default_sqlite_path}")
 connect_args = {"check_same_thread": False} if DB_URL.startswith("sqlite") else {}
 engine = create_engine(DB_URL, echo=False, connect_args=connect_args)
 
