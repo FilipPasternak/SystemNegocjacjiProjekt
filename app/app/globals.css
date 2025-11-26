@@ -333,6 +333,9 @@ section {
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+  padding: 24px;
 }
 
 .device__glow {
@@ -354,9 +357,9 @@ section {
 }
 
 .device__card {
-  position: absolute;
-  inset: auto 16px 16px auto;
-  width: min(86%, 420px);
+  position: relative;
+  inset: auto;
+  width: min(90%, 440px);
   border-radius: 18px;
   padding: 14px;
   background: color-mix(in lab, var(--surface) 78%, transparent);
@@ -364,6 +367,8 @@ section {
   border: 1px solid color-mix(in lab, var(--muted) 20%, transparent);
   box-shadow: var(--shadow);
   animation: pop-in 0.8s ease 0.3s both;
+  text-align: center;
+  z-index: 1;
 }
 
 .device__card h4 {
@@ -375,6 +380,23 @@ section {
   margin: 0;
   font-size: 0.92rem;
   opacity: 0.9;
+}
+
+.device__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+  width: 100%;
+}
+
+.device__stat-label {
+  font-size: 0.9rem;
+}
+
+.device__stat-value {
+  font-size: 1.35rem;
+  font-weight: 700;
 }
 
 @keyframes float {

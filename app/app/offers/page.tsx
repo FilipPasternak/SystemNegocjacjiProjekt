@@ -5,6 +5,7 @@ import { apiFetch } from "@/lib/api";
 
 export default function OffersPage() {
   const [offers, setOffers] = useState<any[]>([]);
+  const [stats, setStats] = useState<{ active_offers: number; producers: number; buyers: number } | null>(null);
   const [q, setQ] = useState("");
   const [category, setCategory] = useState("");
   const [min_price, setMin] = useState("");
@@ -23,8 +24,14 @@ export default function OffersPage() {
     setOffers(data);
   }
 
+  async function loadStats() {
+    const data = await apiFetch<{ active_offers: number; producers: number; buyers: number }>("/api/stats/overview");
+    setStats(data);
+  }
+
   useEffect(() => {
     load();
+    loadStats();
   }, []);
 
   return (
@@ -37,10 +44,6 @@ export default function OffersPage() {
               <h1 className="headline">
                 Wybierz <span className="headline__gradient">najlepszą ofertę</span> dla swojego biznesu
               </h1>
-              <p className="sub">
-                Filtruj propozycje według kategorii, ceny i lokalizacji. Wszystkie dane pozostają aktualne, a każdą ofertę
-                możesz szybko otworzyć, by złożyć zamówienie.
-              </p>
               <div className="hero__cta">
                 <button onClick={load} className="btn">
                   Odśwież wyniki
@@ -54,9 +57,22 @@ export default function OffersPage() {
               <div className="device__glow" />
               <div className="device__grid" />
               <div className="device__card">
-                <div className="pill">Aktywne oferty</div>
-                <h4>{offers.length ? `${offers.length} produktów` : "Czekaj na wyniki..."}</h4>
-                <p className="muted">Dynamicznie ładowane z API i filtrowane według Twoich potrzeb.</p>
+                <div className="pill">Podsumowanie</div>
+                <h4>Rynek w liczbach</h4>
+                <div className="device__stats">
+                  <div className="device__stat">
+                    <div className="device__stat-label muted">Aktywne oferty</div>
+                    <div className="device__stat-value">{stats ? stats.active_offers : "..."}</div>
+                  </div>
+                  <div className="device__stat">
+                    <div className="device__stat-label muted">Konta producentów</div>
+                    <div className="device__stat-value">{stats ? stats.producers : "..."}</div>
+                  </div>
+                  <div className="device__stat">
+                    <div className="device__stat-label muted">Konta kupujących</div>
+                    <div className="device__stat-value">{stats ? stats.buyers : "..."}</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
