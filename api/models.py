@@ -57,3 +57,33 @@ class Order(SQLModel, table=True):
 
     buyer: Optional[User] = Relationship(back_populates="orders")
     offer: Optional[Offer] = Relationship(back_populates="orders")
+
+
+class NegotiationStatus(str, Enum):
+    OPEN = "OPEN"
+    ACCEPTED = "ACCEPTED"
+    REJECTED = "REJECTED"
+
+
+class Negotiation(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    offer_id: int = Field(foreign_key="offer.id", index=True)
+    buyer_id: int = Field(foreign_key="user.id", index=True)
+    producer_id: int = Field(foreign_key="user.id", index=True)
+
+    status: NegotiationStatus = Field(default=NegotiationStatus.OPEN)
+    agreed_price: Optional[float] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    messages: list["NegotiationMessage"] = Relationship(back_populates="negotiation")
+
+
+class NegotiationMessage(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    negotiation_id: int = Field(foreign_key="negotiation.id", index=True)
+    sender_id: int = Field(foreign_key="user.id", index=True)
+    proposed_price: Optional[float] = None
+    message: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    negotiation: Optional[Negotiation] = Relationship(back_populates="messages")
