@@ -79,6 +79,9 @@ export default function OfferDetails() {
             >
               {submitting ? "Przetwarzam..." : "Zamów"}
             </button>
+            <Link href={`/offers/${offer.id}/negotiate`} className="btn btn--ghost">
+              Negocjuj
+            </Link>
             <Link href="/offers" className="btn btn--ghost">
               Wróć do listy
             </Link>
