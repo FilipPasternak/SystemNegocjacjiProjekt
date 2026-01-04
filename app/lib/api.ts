@@ -16,7 +16,6 @@ export async function apiFetch<T>(path: string, opts: RequestInit = {}): Promise
   if (!res.ok) {
     let message = `HTTP ${res.status}`;
     if (res.status === 401) {
-      clearAuth();
       message = "Musisz być zalogowany, aby wykonać tę akcję.";
     }
     if (res.status === 403) {

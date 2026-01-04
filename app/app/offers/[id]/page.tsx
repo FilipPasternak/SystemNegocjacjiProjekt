@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { AUTH_CHANGE_EVENT, apiFetch, getUser } from "@/lib/api";
+import { AUTH_CHANGE_EVENT, apiFetch, getToken, getUser } from "@/lib/api";
 import { useParams } from "next/navigation";
 
 export default function OfferDetails() {
@@ -99,6 +99,10 @@ export default function OfferDetails() {
                   }
                   if (!user) {
                     setError("Zaloguj się, aby złożyć zamówienie.");
+                    return;
+                  }
+                  if (!getToken()) {
+                    setError("Sesja wygasła. Zaloguj się ponownie.");
                     return;
                   }
                   if (user.role !== "BUYER") {

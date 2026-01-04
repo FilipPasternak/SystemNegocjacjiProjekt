@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { offerSchema } from "@/lib/zod";
-import { AUTH_CHANGE_EVENT, apiFetch, getUser } from "@/lib/api";
+import { AUTH_CHANGE_EVENT, apiFetch, getToken, getUser } from "@/lib/api";
 
 export default function NewOfferPage() {
   const {
@@ -86,6 +86,11 @@ export default function NewOfferPage() {
             onSubmit={handleSubmit(async (values: any) => {
               try {
                 setSubmitError(null);
+                const token = getToken();
+                if (!token) {
+                  setSubmitError("Musisz być zalogowany jako producent, aby dodać ofertę.");
+                  return;
+                }
                 await apiFetch("/api/offers", { method: "POST", body: JSON.stringify(values) });
                 alert("Offer created");
                 reset({ ...values, active: values.active });
