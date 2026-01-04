@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { apiFetch } from "@/lib/api";
+import { AUTH_CHANGE_EVENT, apiFetch, getUser } from "@/lib/api";
 import { useParams } from "next/navigation";
 
 export default function OfferDetails() {
@@ -9,12 +9,40 @@ export default function OfferDetails() {
   const [offer, setOffer] = useState<any>(null);
   const [qty, setQty] = useState("1");
   const [submitting, setSubmitting] = useState(false);
+  const [user, setUser] = useState<ReturnType<typeof getUser> | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
     apiFetch(`/api/offers/${params.id}`).then(setOffer);
   }, [params.id]);
 
+  useEffect(() => {
+    const syncUser = () => {
+      setUser(getUser());
+      setAuthReady(true);
+    };
+    syncUser();
+    window.addEventListener(AUTH_CHANGE_EVENT, syncUser);
+    window.addEventListener("storage", syncUser);
+    return () => {
+      window.removeEventListener(AUTH_CHANGE_EVENT, syncUser);
+      window.removeEventListener("storage", syncUser);
+    };
+  }, []);
+
   if (!offer) return <div className="muted">Ładowanie...</div>;
+
+  const canOrder = !!user && user.role === "BUYER" && offer.quantity > 0;
+  const orderCtaLabel = !authReady
+    ? "Ładowanie..."
+    : !user
+      ? "Zaloguj się, aby zamówić"
+      : user.role !== "BUYER"
+        ? "Dostępne tylko dla kupujących"
+        : offer.quantity === 0
+          ? "Brak dostępnej ilości"
+          : "Zamów";
 
   return (
     <section>
@@ -52,6 +80,7 @@ export default function OfferDetails() {
             <input
               type="number"
               min={1}
+              max={offer.quantity}
               className="input"
               value={qty}
               onChange={(e) => setQty(e.target.value)}
@@ -62,22 +91,41 @@ export default function OfferDetails() {
               onClick={async () => {
                 try {
                   setSubmitting(true);
+                  setError(null);
+                  const parsedQty = Number(qty);
+                  if (!Number.isFinite(parsedQty) || parsedQty <= 0) {
+                    setError("Ilość musi być większa od zera.");
+                    return;
+                  }
+                  if (!user) {
+                    setError("Zaloguj się, aby złożyć zamówienie.");
+                    return;
+                  }
+                  if (user.role !== "BUYER") {
+                    setError("Tylko kupujący mogą składać zamówienia.");
+                    return;
+                  }
+                  if (parsedQty > offer.quantity) {
+                    setError("Nie możesz zamówić większej ilości niż dostępna.");
+                    return;
+                  }
                   await apiFetch("/api/orders", {
                     method: "POST",
-                    body: JSON.stringify({ offer_id: Number(offer.id), quantity: Number(qty) }),
+                    body: JSON.stringify({ offer_id: Number(offer.id), quantity: parsedQty }),
                   });
                   alert("Order placed");
                   window.location.href = "/orders";
                 } catch (e: any) {
-                  alert(e.message);
+                  const message = e?.message || "Nie udało się złożyć zamówienia.";
+                  setError(message);
                 } finally {
                   setSubmitting(false);
                 }
               }}
               className="btn"
-              disabled={submitting}
+              disabled={submitting || !canOrder}
             >
-              {submitting ? "Przetwarzam..." : "Zamów"}
+              {submitting ? "Przetwarzam..." : orderCtaLabel}
             </button>
             <Link href={`/offers/${offer.id}/negotiate`} className="btn btn--ghost">
               Negocjuj
@@ -86,6 +134,7 @@ export default function OfferDetails() {
               Wróć do listy
             </Link>
           </div>
+          {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
         </div>
       </div>
     </section>
