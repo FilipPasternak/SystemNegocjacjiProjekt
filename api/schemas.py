@@ -1,7 +1,7 @@
 from typing import Optional, List
 from datetime import datetime
 from sqlmodel import SQLModel
-from models import UserRole, OrderStatus
+from models import UserRole, OrderStatus, NegotiationStatus
 
 # Auth
 class RegisterRequest(SQLModel):
@@ -77,3 +77,35 @@ class OrderPublic(SQLModel):
     unit_price_snapshot: float
     status: OrderStatus
     created_at: datetime
+
+
+# Negotiations
+class NegotiationMessagePublic(SQLModel):
+    id: int
+    sender_id: int
+    proposed_price: Optional[float] = None
+    message: Optional[str] = None
+    created_at: datetime
+
+
+class NegotiationPublic(SQLModel):
+    id: int
+    offer_id: int
+    buyer_id: int
+    producer_id: int
+    status: NegotiationStatus
+    agreed_price: Optional[float] = None
+    created_at: datetime
+    messages: List[NegotiationMessagePublic]
+
+
+class NegotiationCreate(SQLModel):
+    offer_id: int
+    proposed_price: float
+    message: Optional[str] = None
+
+
+class NegotiationMessageCreate(SQLModel):
+    proposed_price: Optional[float] = None
+    message: Optional[str] = None
+    status_update: Optional[NegotiationStatus] = None

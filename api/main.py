@@ -6,6 +6,7 @@ from routes_auth import router as auth_router
 from routes_offers import router as offers_router
 from routes_orders import router as orders_router
 from routes_stats import router as stats_router
+from routes_negotiations import router as negotiations_router
 
 app = FastAPI(title="Producer-Buyer POC", version="0.1.0")
 
@@ -21,6 +22,7 @@ app.include_router(auth_router)
 app.include_router(offers_router)
 app.include_router(orders_router)
 app.include_router(stats_router)
+app.include_router(negotiations_router)
 
 @app.on_event("startup")
 def on_startup():
