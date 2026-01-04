@@ -29,7 +29,7 @@ export default function LoginPage() {
             onSubmit={handleSubmit(async (values: any) => {
               const res = await apiFetch("/api/auth/login", { method: "POST", body: JSON.stringify(values) });
               saveAuth(res.access_token, res.user);
-              window.location.href = "/offers";
+              window.location.href = "/";
             })}
             className="stack"
           >

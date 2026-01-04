@@ -20,14 +20,30 @@ export async function apiFetch<T>(path: string, opts: RequestInit = {}): Promise
   return res.json();
 }
 
+export const AUTH_CHANGE_EVENT = "auth-changed";
+
 export function saveAuth(token: string, user: any) {
   if (typeof window === "undefined") return;
   localStorage.setItem("access_token", token);
   localStorage.setItem("user", JSON.stringify(user));
+  window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
+}
+
+export function clearAuth() {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("user");
+  window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
 }
 
 export function getUser(): { id: number; email: string; role: "PRODUCER" | "BUYER" } | null {
   if (typeof window === "undefined") return null;
   const raw = localStorage.getItem("user");
-  return raw ? JSON.parse(raw) : null;
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error("Cannot parse stored user", e);
+    return null;
+  }
 }
