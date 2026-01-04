@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { AUTH_CHANGE_EVENT, clearAuth, getUser } from "@/lib/api";
 
 const NAV_LINKS = [
   { href: "/offers", label: "Oferty" },
@@ -15,9 +16,12 @@ const AUTH_LINKS = [
   { href: "/auth/register", label: "Zarejestruj" },
 ];
 
+type HeaderUser = ReturnType<typeof getUser>;
+
 export function Header() {
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [user, setUser] = useState<HeaderUser>(null);
 
   const allLinks = useMemo(() => [...NAV_LINKS, ...AUTH_LINKS], []);
 
@@ -27,6 +31,16 @@ export function Header() {
     const initialTheme = (stored as "light" | "dark" | null) || (prefersLight ? "light" : "dark");
     setTheme(initialTheme);
     document.documentElement.setAttribute("data-theme", initialTheme === "light" ? "light" : "dark");
+
+    const syncUser = () => setUser(getUser());
+    syncUser();
+    window.addEventListener(AUTH_CHANGE_EVENT, syncUser);
+    window.addEventListener("storage", syncUser);
+
+    return () => {
+      window.removeEventListener(AUTH_CHANGE_EVENT, syncUser);
+      window.removeEventListener("storage", syncUser);
+    };
   }, []);
 
   useEffect(() => {
@@ -40,6 +54,13 @@ export function Header() {
 
   function closeDrawer() {
     setDrawerOpen(false);
+  }
+
+  function handleLogout() {
+    clearAuth();
+    setUser(null);
+    closeDrawer();
+    window.location.href = "/offers";
   }
 
   return (
@@ -68,12 +89,26 @@ export function Header() {
               <span className="switch__dot" />
             </button>
           </div>
-          <Link href="/auth/login" className="btn btn--ghost" onClick={closeDrawer}>
-            Zaloguj
-          </Link>
-          <Link href="/auth/register" className="btn" onClick={closeDrawer}>
-            Rejestracja
-          </Link>
+          {user ? (
+            <>
+              <div className="pill" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span aria-hidden>👋</span>
+                <span>{user.email}</span>
+              </div>
+              <button className="btn btn--ghost" onClick={handleLogout}>
+                Wyloguj
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/auth/login" className="btn btn--ghost" onClick={closeDrawer}>
+                Zaloguj
+              </Link>
+              <Link href="/auth/register" className="btn" onClick={closeDrawer}>
+                Rejestracja
+              </Link>
+            </>
+          )}
         </nav>
 
         <button className="nav__menuBtn" onClick={() => setDrawerOpen(true)} aria-label="Otwórz menu">
@@ -91,7 +126,7 @@ export function Header() {
             Zamknij
           </button>
         </div>
-        {allLinks.map((link) => (
+        {(user ? NAV_LINKS : allLinks).map((link) => (
           <Link key={link.href} href={link.href} onClick={closeDrawer}>
             {link.label}
           </Link>
@@ -109,6 +144,23 @@ export function Header() {
             <span className="switch__dot" />
           </button>
         </div>
+        {user ? (
+          <>
+            <div className="pill" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span aria-hidden>👋</span>
+              <span>{user.email}</span>
+            </div>
+            <button className="btn btn--ghost" onClick={handleLogout}>
+              Wyloguj
+            </button>
+          </>
+        ) : (
+          AUTH_LINKS.map((link) => (
+            <Link key={link.href} href={link.href} onClick={closeDrawer}>
+              {link.label}
+            </Link>
+          ))
+        )}
       </div>
     </header>
   );
