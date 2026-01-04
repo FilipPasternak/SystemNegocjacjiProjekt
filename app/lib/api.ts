@@ -15,8 +15,10 @@ export async function apiFetch<T>(path: string, opts: RequestInit = {}): Promise
   const res = await fetch(`${API_BASE}${path}`, { ...opts, headers, cache: "no-store" });
   if (!res.ok) {
     let message = `HTTP ${res.status}`;
+    let shouldClearAuth = false;
     if (res.status === 401) {
-      message = "Musisz być zalogowany, aby wykonać tę akcję.";
+      message = "Sesja wygasła. Zaloguj się ponownie, aby kontynuować.";
+      shouldClearAuth = true;
     }
     if (res.status === 403) {
       message = "Brak uprawnień do wykonania tej akcji.";
@@ -31,6 +33,9 @@ export async function apiFetch<T>(path: string, opts: RequestInit = {}): Promise
     } catch (_) {
       const text = await res.text();
       if (text) message = text;
+    }
+    if (shouldClearAuth) {
+      clearAuth();
     }
     throw new Error(message);
   }
