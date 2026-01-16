@@ -1,8 +1,9 @@
 "use client";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { offerSchema } from "@/lib/zod";
-import { apiFetch } from "@/lib/api";
+import { AUTH_CHANGE_EVENT, apiFetch, getToken, getUser } from "@/lib/api";
 
 export default function NewOfferPage() {
   const {
@@ -14,6 +15,59 @@ export default function NewOfferPage() {
     resolver: zodResolver(offerSchema),
     defaultValues: { active: true },
   });
+  const [user, setUser] = useState<ReturnType<typeof getUser> | null>();
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const syncUser = () => setUser(getUser());
+    syncUser();
+    window.addEventListener(AUTH_CHANGE_EVENT, syncUser);
+    window.addEventListener("storage", syncUser);
+    return () => {
+      window.removeEventListener(AUTH_CHANGE_EVENT, syncUser);
+      window.removeEventListener("storage", syncUser);
+    };
+  }, []);
+
+  if (user === undefined) {
+    return <div className="muted">Ładowanie...</div>;
+  }
+
+  if (!user) {
+    return (
+      <section>
+        <div className="container grid">
+          <div className="badge">Dodaj nową ofertę</div>
+          <div className="contact__card stack">
+            <div className="headline" style={{ fontSize: "1.6rem", margin: 0 }}>
+              Wymagane logowanie
+            </div>
+            <p className="muted">
+              Aby utworzyć ofertę musisz być zalogowany jako producent. Zaloguj się lub utwórz konto producenta, aby kontynuować.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (user.role !== "PRODUCER") {
+    return (
+      <section>
+        <div className="container grid">
+          <div className="badge">Brak dostępu</div>
+          <div className="contact__card stack">
+            <div className="headline" style={{ fontSize: "1.6rem", margin: 0 }}>
+              Podstrona tylko dla producentów
+            </div>
+            <p className="muted">
+              Tylko konta producentów mogą dodawać oferty. Zaloguj się na konto producenta, aby przejść dalej.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section>
@@ -30,10 +84,21 @@ export default function NewOfferPage() {
 
           <form
             onSubmit={handleSubmit(async (values: any) => {
-              await apiFetch("/api/offers", { method: "POST", body: JSON.stringify(values) });
-              alert("Offer created");
-              reset({ ...values, active: values.active });
-              window.location.href = "/producer/my-offers";
+              try {
+                setSubmitError(null);
+                const token = getToken();
+                if (!token) {
+                  setSubmitError("Musisz być zalogowany jako producent, aby dodać ofertę.");
+                  return;
+                }
+                await apiFetch("/api/offers", { method: "POST", body: JSON.stringify(values) });
+                alert("Offer created");
+                reset({ ...values, active: values.active });
+                window.location.href = "/producer/my-offers";
+              } catch (err: any) {
+                const message = err?.message || "Nie udało się dodać oferty.";
+                setSubmitError(message);
+              }
             })}
             className="form-grid"
             style={{ marginTop: 20 }}
@@ -64,6 +129,7 @@ export default function NewOfferPage() {
               </button>
             </div>
           </form>
+          {submitError && <p className="text-red-500 text-sm mt-3">{submitError}</p>}
           {errors && <pre className="text-red-500 text-sm mt-3">{JSON.stringify(errors, null, 2)}</pre>}
         </div>
       </div>

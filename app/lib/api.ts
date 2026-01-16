@@ -14,8 +14,30 @@ export async function apiFetch<T>(path: string, opts: RequestInit = {}): Promise
   if (token) headers["Authorization"] = `Bearer ${token}`;
   const res = await fetch(`${API_BASE}${path}`, { ...opts, headers, cache: "no-store" });
   if (!res.ok) {
-    const msg = await res.text();
-    throw new Error(msg || `HTTP ${res.status}`);
+    let message = `HTTP ${res.status}`;
+    let shouldClearAuth = false;
+    if (res.status === 401) {
+      message = "Sesja wygasła. Zaloguj się ponownie, aby kontynuować.";
+      shouldClearAuth = true;
+    }
+    if (res.status === 403) {
+      message = "Brak uprawnień do wykonania tej akcji.";
+    }
+    try {
+      const data = await res.json();
+      if (typeof data?.detail === "string") {
+        message = data.detail;
+      } else if (typeof data?.message === "string") {
+        message = data.message;
+      }
+    } catch (_) {
+      const text = await res.text();
+      if (text) message = text;
+    }
+    if (shouldClearAuth) {
+      clearAuth();
+    }
+    throw new Error(message);
   }
   return res.json();
 }

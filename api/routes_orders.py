@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
@@ -14,14 +15,23 @@ def place_order(body: OrderCreate, user: User = Depends(require_role(UserRole.BU
     offer = session.get(Offer, body.offer_id)
     if not offer or not offer.active:
         raise HTTPException(status_code=404, detail="Not found")
+    if body.quantity <= 0:
+        raise HTTPException(status_code=400, detail="Validation error: quantity must be positive")
     if body.quantity > offer.quantity:
         raise HTTPException(status_code=400, detail="Validation error: quantity exceeds available offer quantity")
+
+    offer.quantity -= body.quantity
+    offer.updated_at = datetime.utcnow()
+    if offer.quantity == 0:
+        offer.active = False
+
     order = Order(
         buyer_id=user.id,
         offer_id=offer.id,
         quantity=body.quantity,
         unit_price_snapshot=offer.unit_price,
     )
+    session.add(offer)
     session.add(order)
     session.commit()
     session.refresh(order)
